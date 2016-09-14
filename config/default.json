@@ -1,0 +1,6 @@
+{
+ "Notifications" : {
+   "topic" : "notifications",
+   "partitions" : 24
+ }
+}

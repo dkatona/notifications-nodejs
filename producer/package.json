@@ -1,0 +1,14 @@
+{
+  "name": "Notifications-producer",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node producer.js"
+  },
+  "dependencies": {
+    "express": "~4.14.0",
+    "body-parser": "~1.15.2",
+    "kafka-node": "~0.5.8",
+    "config": "~1.21.0",
+    "hashcode" : "~1.0.3"
+  }
+}

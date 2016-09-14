@@ -1,0 +1,12 @@
+{
+  "name": "Notifications-consumer",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node consumer.js"
+  },
+  "dependencies": {
+    "kafka-node": "~0.5.8",
+    "config": "~1.21.0",
+    "slack-node" : "~0.1.8"
+  }
+}
