@@ -1,3 +1,5 @@
+'use strict';
+
 var kafka = require('kafka-node');
 var config = require('config');
 var Slack = require('slack-node');
@@ -14,7 +16,6 @@ var highLevelConsumer = new HighLevelConsumer(
 
 highLevelConsumer.on('message', function (message) {
     var event = JSON.parse(message.value);
-    console.log(event);
     var entity_id = event.data.id;
 
     console.log("action=message_processing status=START entity_id=" + entity_id)
