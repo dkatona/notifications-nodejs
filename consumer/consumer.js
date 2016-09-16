@@ -16,13 +16,13 @@ var highLevelConsumer = new HighLevelConsumer(
 
 highLevelConsumer.on('message', function (message) {
     var event = JSON.parse(message.value);
-    var entity_id = event.data.id;
+    var entityId = event.data.id;
 
-    console.log("action=message_processing status=START entity_id=" + entity_id)
+    console.log("action=message_processing status=START entityId=" + entityId)
 
-    var subscriptions = fetchSubscriptions(entity_id, event.type);
+    var subscriptions = fetchSubscriptions(entityId, event.type);
     //for every subscription, send the notification and store it in a history of notifications
-    sendNotification(event, entity_id);
+    sendNotification(event, entityId);
 
 });
 
@@ -38,36 +38,36 @@ process.on('SIGINT', function () {
 
 /**
  * Filter subscriptions based on event_type and check if account associated with subscription
- * has access to entity_id
+ * has access to entityId
  *
  * This data should be cached to process notification quickly
- * @param entity_id
- * @param event_type
+ * @param entityId
+ * @param eventType
  */
-function fetchSubscriptions(entity_id, event_type) {
+function fetchSubscriptions(entityId, eventType) {
     //e.g. fetch it from MongoDB
 }
 
-function sendNotification(event, entity_id) {
+function sendNotification(event, entityId) {
     if (config.has("Notifications.slack_uri")) {
         slack.webhook({username: "apiarybot", text: getNotificationContent(event)}, function (err, response) {
-            handleSlackResponse(response, entity_id);
+            handleSlackResponse(response, entityId);
         });
     } else {
         //log it at least
         console.log("notification - " + JSON.stringify(event));
 
-        console.log("action=message_processing status=FINISH entity_id=" + entity_id)
+        console.log("action=message_processing status=FINISH entityId=" + entityId)
     }
 }
 
-function handleSlackResponse(response, entity_id) {
+function handleSlackResponse(response, entityId) {
     if (response.status !== 'ok') {
-        console.log("action=message_processing status=ERROR entity_id=" + entity_id +
+        console.log("action=message_processing status=ERROR entityId=" + entityId +
                     ", response=" + JSON.stringify(response))
         // retry a few times or store it to collection of events to retry (with precise time of a next try)
     } else {
-        console.log("action=message_processing status=FINISH entity_id=" + entity_id);
+        console.log("action=message_processing status=FINISH entityId=" + entityId);
     }
 }
 /**
