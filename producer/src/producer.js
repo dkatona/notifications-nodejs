@@ -6,12 +6,14 @@ var express = require('express');
 var bodyParser = require('body-parser');
 
 var kafka = require('kafka-node');
-var encode = require('hashcode').hashCode;
+var kafkaHelper = require('./kafkaHelper.js')
 
 var Producer = kafka.Producer;
 var client = new kafka.Client('zookeeper');
 var producer = new Producer(client);
+
 var notificationsTopic = config.get("Notifications.topic");
+var numberOfPartitions = config.get('Notifications.partitions');
 
 var app = express();
 app.use(bodyParser.json());
@@ -31,7 +33,7 @@ producer.on('error', function (err) {
 })
 
 process.on('SIGINT', function () {
-    client.close(function () {
+    producer.close(function () {
         process.exit();
     });
 });
@@ -46,8 +48,8 @@ app.post("/notifications", function(req, res) {
     }
     //tried keypartitioner, but it doesn't seem to work in kafka-node (see https://github.com/SOHU-Co/kafka-node/issues/354)
     var payloads = [
-        { topic: config.get("Notifications.topic"), messages: JSON.stringify(notification),
-            partition: partitionNumber(notification.data.id) } ];
+        { topic: notificationsTopic, messages: JSON.stringify(notification),
+            partition: kafkaHelper.partitionNumber(notification.data.id, numberOfPartitions) } ];
 
     producer.send(payloads, function (err, data) {
         if (err) {
@@ -70,17 +72,4 @@ app.post("/notifications", function(req, res) {
 function handleError(res, action, message, code) {
     console.log("action=" + action + " status=ERROR msg=" + message);
     res.status(code || 500).json({"error": message});
-}
-
-/**
- * Returns partition number to send the message with entity_id to - messages with same entity_id land in the same
- * partition to maintain order
- *
- * @param entity_id id of the entity changed in notification
- * @returns partition number in kafka
- */
-function partitionNumber(entity_id){
-    var numberOfPartitions = config.get('Notifications.partitions');
-    var hashcode = encode().value(entity_id);
-    return Math.abs(hashcode % numberOfPartitions); //basically the same as kafka keyed partitioner
 }

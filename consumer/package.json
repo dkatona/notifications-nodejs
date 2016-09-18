@@ -1,8 +1,9 @@
 {
   "name": "Notifications-consumer",
+  "description": "Consumer of notification events",
   "version": "1.0.0",
   "scripts": {
-    "start": "node consumer.js"
+    "start": "node src/consumer.js"
   },
   "dependencies": {
     "kafka-node": "~0.5.8",

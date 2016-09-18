@@ -1,6 +1,13 @@
-FROM node:4.5-onbuild
+FROM node:4.5.0
 
 MAINTAINER Dusan Katona 
 
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+ADD . /usr/src/app/
+RUN npm install
+RUN npm test
+
 #to prevent problem with sigint and pid 1, run with node instead of npm
-CMD ["node", "producer.js"]
+CMD ["node", "src/producer.js"]
